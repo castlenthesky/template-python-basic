@@ -6,8 +6,6 @@ load_dotenv()
 
 
 def main(*args, **kwargs):
-    print("Starting application...")
-    print("Loading environmental variables...")
     return os.getenv("MY_VAR", "default_value")
 
 
