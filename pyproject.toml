@@ -3,19 +3,38 @@ name = "my_project"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "python-dotenv>=1.0.1",
-]
+requires-python = ">=3.10"
+dependencies = []
+
+
 
 [dependency-groups]
 dev = [
-    "pytest-cov>=6.0.0",
-    "pytest>=8.3.4",
-    "ruff>=0.8.4",
+  "ruff>=0.8.4",
+  "ipywidgets>=8.1.5",
+  "ipykernel>=6.29.5",
+  "pytest>=8.3.4",
+  "pytest-cov>=6.0.0",
 ]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = ["tests"]
+
+[tool.uv]
+package = true
+
+[tool.coverage]
+config_file = ".coveragerc"
 
 [tool.pytest.ini_options]
 testpaths = "tests"
 pythonpath = "src"
-addopts = "--cov=src --cov-report=xml:coverage.xml"
+addopts = "--cov=src --cov-report=xml:.coverage/coverage.xml --cov-config=.coveragerc"
+
+[tool.ruff]
+line-length = 100
+indent-width = 2

@@ -1,0 +1,22 @@
+# .coveragerc
+[run]
+source = src
+data_file = .coverage/.coverage  # Store coverage data in the 'coverage/' directory
+branch = True
+omit = 
+    */site-packages/*
+    */tests/*
+    */.venv/*
+    */__init__.py
+
+[html]
+directory = .coverage/htmlcov
+
+[xml]
+output = .coverage/coverage.xml
+
+[report]
+show_missing = True
+exclude_lines =
+    if __name__ == "__main__":
+fail_under = 80
