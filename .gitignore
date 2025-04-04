@@ -1,9 +1,16 @@
+# Dagster
+.assets/
+.temp_dagster/
+.dagster/
+
+# Misc
 manuals/
 lib/
 temp/
 data/
 coding/
 
+# Coverage
 coverage/
 
 # Byte-compiled / optimized / DLL files

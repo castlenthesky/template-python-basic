@@ -4,17 +4,21 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
-
+dependencies = [
+    "dagster>=1.10.8",
+    "fastapi>=0.115.12",
+]
 
 
 [dependency-groups]
 dev = [
   "ruff>=0.8.4",
-  "ipywidgets>=8.1.5",
-  "ipykernel>=6.29.5",
   "pytest>=8.3.4",
   "pytest-cov>=6.0.0",
+  "pytest-asyncio>=0.25.3",
+  "ipykernel>=6.29.5",
+  "ipywidgets>=8.1.5",
+  "dagster-webserver>=1.10.8",
 ]
 
 [build-system]
@@ -24,17 +28,33 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 exclude = ["tests"]
 
-[tool.uv]
-package = true
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+  "-v",
+  "-s",
+  "--cov=src",
+  "--cov-config=.coveragerc",
+  "--cov-report=xml:.coverage/coverage.xml",
+  "--cov-report=html:.coverage/html",
+  "--cov-report=term-missing"
+]
+
+[tool.dagster]
+code_location_name = "my_project"
+modules=[
+  {type = "module", name = "src.asset_definitions"},
+]
 
 [tool.coverage]
 config_file = ".coveragerc"
 
-[tool.pytest.ini_options]
-testpaths = "tests"
-pythonpath = "src"
-addopts = "--cov=src --cov-report=xml:.coverage/coverage.xml --cov-config=.coveragerc"
+[tool.uv]
+package = true
 
 [tool.ruff]
-line-length = 100
+line-length = 101
 indent-width = 2
+
+[tool.ruff.format]
+indent-style = "space"

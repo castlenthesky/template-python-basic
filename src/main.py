@@ -1,6 +1,8 @@
-def main():
-    print("Hello World!")
-    return True
-    
-if __name__ == "__main__":
-    main()
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/")
+def hello(name: str = "World"):
+  return f"Hello, {name}!"
