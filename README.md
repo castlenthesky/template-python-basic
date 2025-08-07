@@ -7,19 +7,25 @@ This project uses `uv` as to handle the virtual environment configuration, and p
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Once `uv` has been installed, you can run the application with
+Once `uv` has been installed, you can run the application with:
 
 ```bash
 uv run src/main.py
+```
+
+OR install all dependencies/features with
+
+```bash
+uv sync
 ```
 
 ## Repository Structure
 ```
 my_project/
 ├── src/
-│   ├── dagster_definitions/  # dagster asset definitions
 │   ├── api/                  # simple FastAPI example
 │   ├── config/               # application settings and configuration
+│   ├── dagster_definitions/  # example dagster asset definitions
 │   └── main.py
 ├── .env
 ├── pyproject.toml
@@ -49,4 +55,7 @@ docker build --target=production \
 ```
 
 ## Dagster and Asset Materialization
-Standards for our organization involve materializing assets to the `.assets` directory in the root of a project. These can be mapped out of containers and into whatever functional directory you want. Also, on local development the `.asset` folders can be symlinked together across dagster-projects to simulate a production environment with shared storage between containers.
+
+After running `uv sync` you can launch dagster's service and web UI by running `dagster dev` inside of your virtual environment.
+
+Dagster configuration is managed in the `pyproject.toml` file.
