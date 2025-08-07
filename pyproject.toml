@@ -5,8 +5,12 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "dagster>=1.10.8",
-    "fastapi>=0.115.12",
+  # API framework
+  "fastapi>=0.116.1",
+  # environmental variables and settings management
+  "pydantic-settings>=2.10.1",
+  # Dagster for data orchestration
+  "dagster>=1.11.4",
 ]
 
 
@@ -18,7 +22,7 @@ dev = [
   "pytest-asyncio>=0.25.3",
   "ipykernel>=6.29.5",
   "ipywidgets>=8.1.5",
-  "dagster-webserver>=1.10.8",
+  "dagster-webserver>=1.11.4",
 ]
 
 [build-system]
@@ -28,33 +32,57 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 exclude = ["tests"]
 
+[tool.uv]
+package = true
+
+[tool.ruff]
+line-length = 100
+indent-width = 2
+
+[tool.ruff.format]
+indent-style = "space"
+
+# Dagster configuration
+[tool.dagster]
+code_location_name = "my_project"
+modules=[
+  {type = "module", name = "src.dagster_definitions"},
+]
+
+# Pytest configuration
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = [
   "-v",
   "-s",
   "--cov=src",
-  "--cov-config=.coveragerc",
   "--cov-report=xml:.coverage/coverage.xml",
   "--cov-report=html:.coverage/html",
   "--cov-report=term-missing"
 ]
 
-[tool.dagster]
-code_location_name = "my_project"
-modules=[
-  {type = "module", name = "src.asset_definitions"},
+# Pytest coverage configuration
+[tool.coverage.run]
+source = ["src"]
+data_file = ".coverage/.coverage"
+branch = true
+omit = [
+    "*/site-packages/*",
+    "*/tests/*",
+    "*/.venv/*",
+    "*/__init__.py",
+    "*/dagster_definitions/*",
 ]
 
-[tool.coverage]
-config_file = ".coveragerc"
+[tool.coverage.html]
+directory = ".coverage/html"
 
-[tool.uv]
-package = true
+[tool.coverage.xml]
+output = ".coverage/coverage.xml"
 
-[tool.ruff]
-line-length = 101
-indent-width = 2
-
-[tool.ruff.format]
-indent-style = "space"
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+exclude_lines = [
+    "if __name__ == \"__main__\":"
+]

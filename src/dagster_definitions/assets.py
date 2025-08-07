@@ -13,10 +13,16 @@ def example_request_taxi_data():
     output_file.write(raw_trips.content)
 
 
-@asset
+@asset(deps=["example_request_taxi_data"])
 def example_request_taxi_zone_data():
   raw_zones = requests.get(
     "https://community-engineering-artifacts.s3.us-west-2.amazonaws.com/dagster-university/data/taxi_zones.csv"
   )
   with open("data/example/raw/taxi_zones.csv", "wb") as output_file:
     output_file.write(raw_zones.content)
+
+
+@asset(deps=["example_request_taxi_data", "example_request_taxi_zone_data"])
+def example_transform_taxi_data():
+  # do your transformation here
+  pass

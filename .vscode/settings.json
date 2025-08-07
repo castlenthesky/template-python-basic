@@ -49,13 +49,16 @@
     "PYTHONPATH": "${workspaceFolder}/src"
   },
   // Extension Recommendations
+  "workbench.remoteIndicator.showExtensionRecommendations": true,
   "recommendations": [
     "ms-vscode-remote.remote-wsl",
+    "yzhang.markdown-all-in-one",
+    "bierner.markdown-mermaid",
     "charliermarsh.ruff",
     "ms-python.python",
-    "ms-python.isort",
     "ms-toolsai.jupyter",
-    "hbenl.vscode-test-explorer",
-    "ryanluker.vscode-coverage-gutters"
+    "ryanluker.vscode-coverage-gutters",
+    "samuelcolvin.jinjahtml",
+    "tamasfe.even-better-toml"
   ]
 }
