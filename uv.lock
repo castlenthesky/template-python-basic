@@ -1166,13 +1166,13 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "dagster" },
-    { name = "dagster-webserver" },
     { name = "fastapi" },
     { name = "pydantic-settings" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "dagster-webserver" },
     { name = "ipykernel" },
     { name = "ipywidgets" },
     { name = "pytest" },
@@ -1184,13 +1184,13 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "dagster", specifier = ">=1.11.4" },
-    { name = "dagster-webserver", specifier = ">=1.11.4" },
     { name = "fastapi", specifier = ">=0.116.1" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "dagster-webserver", specifier = ">=1.11.4" },
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "ipywidgets", specifier = ">=8.1.5" },
     { name = "pytest", specifier = ">=8.3.4" },

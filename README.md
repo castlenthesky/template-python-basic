@@ -16,13 +16,12 @@ uv run src/main.py
 ## Repository Structure
 ```
 my_project/
-├── .assets/ # dagster asset materialization target (local, symlink, or containered)
 ├── src/
-│   ├── asset_definitions/  # dagster asset definitions
-│   ├── api/ 
+│   ├── dagster_definitions/  # dagster asset definitions
+│   ├── api/                  # simple FastAPI example
+│   ├── config/               # application settings and configuration
 │   └── main.py
 ├── .env
-├── .coveragerc
 ├── pyproject.toml
 └── README.md
 ```

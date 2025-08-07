@@ -23,7 +23,6 @@
     "-v",
     "-s",
     "--cov=src",
-    "--cov-config=.coveragerc",
     "--cov-report=xml:.coverage/coverage.xml",
     "--cov-report=html:.coverage/htmlcov",
   ],
