@@ -1,6 +1,6 @@
 from fastapi.routing import APIRouter
 
-from api.features.health.models import HealthRequest, HealthResponse
+from src.api.features.health.models import HealthRequest, HealthResponse
 
 from .controller import handle_health_check
 

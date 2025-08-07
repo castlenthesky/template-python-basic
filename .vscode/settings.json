@@ -26,13 +26,17 @@
     "--cov-report=xml:.coverage/coverage.xml",
     "--cov-report=html:.coverage/htmlcov",
   ],
-  "coverage-gutters.coverageBaseDir": ".coverage",
+  // Coverage Settings for VS Code Test Explorer
+  "python.testing.coverageEnabled": true,
+  "python.testing.coverageReport": ".coverage/coverage.xml",
+  "coverage-gutters.coverageBaseDir": "${workspaceFolder}",
   "coverage-gutters.manualCoverageFilePaths": [
-    "coverage/.coverage",
     ".coverage/coverage.xml"
   ],
   "coverage-gutters.coverageReportFileName": "${workspaceFolder}/.coverage/coverage.xml",
   "coverage-gutters.showGutterCoverage": true,
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
   // Formatting Settings
   "editor.indentSize": "tabSize",
   "editor.tabSize": 2,
