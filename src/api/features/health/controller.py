@@ -1,6 +1,5 @@
 from src.api.features.health.models import HealthResponse
-
-from . import service
+from src.services.health import service
 
 
 async def handle_health_check() -> HealthResponse:

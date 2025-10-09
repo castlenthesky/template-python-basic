@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from .features.health.router import health_router
-from .middleware.cors_middleware import configure_cors_middleware
+from src.api.features.health.router import health_router
+from src.api.middleware.cors_middleware import configure_cors_middleware
 
 app = FastAPI(
   title="My FastAPI Application",

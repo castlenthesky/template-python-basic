@@ -63,5 +63,14 @@
     "ryanluker.vscode-coverage-gutters",
     "samuelcolvin.jinjahtml",
     "tamasfe.even-better-toml"
-  ]
+  ],
+  "cursorpyright.analysis.autoImportCompletions": true,
+  "cursorpyright.analysis.autoSearchPaths": true,
+  "cursorpyright.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none"
+  },
+  "cursorpyright.analysis.extraPaths": [
+    "${workspaceFolder}/src"
+  ],
+  "cursorpyright.analysis.typeCheckingMode": "basic"
 }

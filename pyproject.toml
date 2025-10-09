@@ -11,6 +11,11 @@ dependencies = [
   "pydantic-settings>=2.10.1",
   # Dagster for data orchestration
   "dagster>=1.11.4",
+  # Database
+  "sqlalchemy>=2.0.42",
+  "sqlmodel>=0.0.27",
+  "duckdb>=1.4.1",
+  "duckdb-engine>=0.17.0",
 ]
 
 
