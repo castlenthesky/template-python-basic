@@ -3,8 +3,10 @@
 from datetime import datetime
 from typing import Optional, TYPE_CHECKING
 from enum import Enum
+from uuid import UUID, uuid4
 from sqlmodel import SQLModel, Field, Relationship, Column, String, DateTime, Text
 from sqlalchemy import func, ForeignKey
+from ..types import GUID
 
 if TYPE_CHECKING:
   from .user import User
@@ -31,11 +33,12 @@ class TaskBase(SQLModel):
   )
   status: TaskStatus = Field(
     default=TaskStatus.PENDING,
+    sa_column=Column(String(20), nullable=False),
     description="Current status of the task"
   )
-  user_id: int = Field(
-    foreign_key="users.id",
-    description="ID of the user who owns this task"
+  user_id: UUID = Field(
+    sa_column=Column(GUID(), ForeignKey("users.id"), nullable=False),
+    description="UUID of the user who owns this task"
   )
 
 
@@ -43,7 +46,11 @@ class Task(TaskBase, table=True):
   """Task table model."""
   __tablename__ = "tasks"
   
-  id: Optional[int] = Field(default=None, primary_key=True)
+  id: UUID = Field(
+    default_factory=uuid4,
+    sa_column=Column(GUID(), primary_key=True),
+    description="UUID primary key"
+  )
   created_at: datetime = Field(
     sa_column=Column(DateTime(timezone=True), server_default=func.now()),
     description="When the task was created"
@@ -76,7 +83,7 @@ class TaskCreate(TaskBase):
 
 class TaskRead(TaskBase):
   """Model for reading a task."""
-  id: int
+  id: UUID
   created_at: datetime
   updated_at: datetime
   completed_at: Optional[datetime] = None

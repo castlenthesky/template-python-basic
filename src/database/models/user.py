@@ -2,8 +2,10 @@
 
 from datetime import datetime
 from typing import Optional, List, TYPE_CHECKING
+from uuid import UUID, uuid4
 from sqlmodel import SQLModel, Field, Relationship, Column, String, DateTime
 from sqlalchemy import func
+from ..types import GUID
 
 if TYPE_CHECKING:
   from .task import Task
@@ -21,7 +23,11 @@ class User(UserBase, table=True):
   """User table model."""
   __tablename__ = "users"
   
-  id: Optional[int] = Field(default=None, primary_key=True)
+  id: UUID = Field(
+    default_factory=uuid4,
+    sa_column=Column(GUID(), primary_key=True),
+    description="UUID primary key"
+  )
   created_at: datetime = Field(
     sa_column=Column(DateTime(timezone=True), server_default=func.now()),
     description="When the user was created"
@@ -49,7 +55,7 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
   """Model for reading a user."""
-  id: int
+  id: UUID
   created_at: datetime
   updated_at: datetime
 

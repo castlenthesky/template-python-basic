@@ -1,4 +1,4 @@
-"""Database initialization utilities for SQLite."""
+"""Database initialization utilities with database-agnostic support."""
 
 from sqlmodel import SQLModel
 

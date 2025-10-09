@@ -13,7 +13,8 @@ class Settings(BaseSettings):
 
   # Database settings
   DATABASE_URL: Optional[str] = None
-  DATABASE_CONNECTION_STRING: str = "sqlite:///app.db"
+  # DATABASE_CONNECTION_STRING: str = "sqlite:///data/app_sqlite.db"
+  DATABASE_CONNECTION_STRING: str = "duckdb:///app.db"
   SQL_ECHO: bool = False
 
   # Database connection pool settings

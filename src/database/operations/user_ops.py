@@ -1,6 +1,7 @@
 """User repository for CRUD operations."""
 
 from typing import Optional
+from uuid import UUID
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from .base import BaseRepository
@@ -29,7 +30,7 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
     
     return self.create(session, user_create)
   
-  def get_user_with_tasks(self, session: Session, user_id: int) -> Optional[User]:
+  def get_user_with_tasks(self, session: Session, user_id: UUID) -> Optional[User]:
     """Get user with their tasks loaded."""
     statement = select(User).where(User.id == user_id)
     user = session.execute(statement).scalar_one_or_none()

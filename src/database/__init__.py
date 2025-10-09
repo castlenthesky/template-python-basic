@@ -1,8 +1,9 @@
-"""Database package - SQLAlchemy + SQLite setup with SQLModel."""
+"""Database package - SQLAlchemy with database-agnostic setup using SQLModel."""
 
 from .engine import engine, get_engine
 from .session import SessionLocal, get_session, session_scope
 from .base import Base
+from .types import GUID
 
 __all__ = [
   "engine",
@@ -11,4 +12,5 @@ __all__ = [
   "get_session",
   "session_scope",
   "Base",
+  "GUID",
 ]
