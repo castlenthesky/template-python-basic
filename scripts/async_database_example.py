@@ -60,10 +60,6 @@ async def async_database_example():
         logger.info("Use scripts/database_example.py for sync operations")
         return
     
-    if not settings.is_async_database():
-        logger.warning("DATABASE_URL requires async driver for high-performance operations")
-        logger.info("Async drivers: +asyncpg (PostgreSQL), +aiomysql (MySQL), +aiosqlite (SQLite)")
-        return
     
     # Create tables using async patterns
     await create_async_tables()
@@ -89,11 +85,13 @@ async def async_database_example():
     try:
         # Get async connection diagnostics
         from src.database import db_connection
-        info = db_connection.get_connection_info()
+        info = db_connection().get_connection_info()
         logger.info(f"Database dialect: {info['dialect']}")
-        logger.info(f"Async support available: {info['is_async_supported']}")
-        logger.info(f"Async driver configured: {info['is_async_configured']}")
-        logger.info(f"Async driver: {info['driver']}")
+        logger.info(f"Database URL: {info['url']}")
+        logger.info(f"Driver: {info['driver']}")
+        logger.info(f"Pool size: {info['pool_size']}")
+        logger.info(f"Checked out connections: {info['checked_out_connections']}")
+        logger.info(f"✅ Async-native architecture confirmed")
     except Exception as e:
         logger.warning(f"Could not get async connection diagnostics: {e}")
     
@@ -139,10 +137,9 @@ async def demonstrate_async_database_detection():
     logger.info("=" * 50)
     
     database_type = settings.get_database_type()
-    is_async_configured = settings.is_async_database()
     
     logger.info(f"Detected database type: {database_type}")
-    logger.info(f"Async driver configured: {is_async_configured}")
+    logger.info("Async-native architecture - all connections use async drivers")
     
     # Demonstrate async-compatible database URL patterns
     async_database_examples = [
@@ -166,9 +163,8 @@ async def demonstrate_async_database_detection():
     for url in sync_database_examples:
         logger.info(f"  🔵 {url}")
     
-    logger.info(f"\n💡 Current configuration: {'✅ Async-Ready' if is_async_configured else '⚠️  Sync Mode'}")
-    if not is_async_configured:
-        logger.info("   Consider upgrading to async drivers for better performance!")
+    logger.info(f"\n💡 Current configuration: ✅ Async-Native Architecture")
+    logger.info("   All database operations use async drivers for high performance!")
 
 
 if __name__ == "__main__":

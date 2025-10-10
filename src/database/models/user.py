@@ -39,12 +39,10 @@ class UserCreate(UserBase):
   pass
 
 
-class UserRead(UserBase):
+class UserRead(UserBase, UUIDMixin, TimestampMixin):
   """Model for reading a user."""
 
-  id: UUID
-  created_at: datetime
-  updated_at: datetime
+  pass
 
 
 class UserUpdate(SQLModel):

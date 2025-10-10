@@ -65,12 +65,9 @@ class TaskCreate(TaskBase):
   pass
 
 
-class TaskRead(TaskBase):
+class TaskRead(TaskBase, UUIDMixin, TimestampMixin):
   """Model for reading a task."""
 
-  id: UUID
-  created_at: datetime
-  updated_at: datetime
   completed_at: Optional[datetime] = None
 
 

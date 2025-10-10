@@ -56,15 +56,17 @@ async def validate_async_configuration():
     print("\n🔍 Validating async database configuration...")
     
     database_type = settings.get_database_type()
-    is_async_configured = settings.is_async_database()
-    
     print(f"Database type: {database_type}")
-    print(f"Async driver configured: {is_async_configured}")
+    print(f"Database URL: {settings.DATABASE_URL}")
     
-    if not is_async_configured:
+    # Use the existing validation method from settings
+    try:
+        settings.validate_async_database()
+        print("✅ Async database configuration validated!")
+    except ValueError as e:
         raise ValueError(
-            f"Database URL must use async driver for modern async-native operations.\n"
-            f"Current URL uses non-async driver. Please update to:\n"
+            f"Database configuration error: {e}\n"
+            f"Please update to use async drivers:\n"
             f"  - PostgreSQL: +asyncpg (postgresql+asyncpg://...)\n"
             f"  - MySQL: +aiomysql (mysql+aiomysql://...)\n"
             f"  - SQLite: +aiosqlite (sqlite+aiosqlite://...)"
@@ -75,8 +77,6 @@ async def validate_async_configuration():
             f"Database type '{database_type}' not supported for async operations.\n"
             f"Supported async databases: PostgreSQL, MySQL, SQLite"
         )
-    
-    print("✅ Async database configuration validated!")
 
 
 async def main():

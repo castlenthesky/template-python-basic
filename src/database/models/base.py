@@ -11,11 +11,20 @@ class TimestampMixin(SQLModel):
   """Mixin for models that need created_at and updated_at timestamps."""
 
   created_at: datetime = Field(
-    sa_column=Column(DateTime(timezone=True), server_default=func.now()),
+    default=None,
+    sa_type=DateTime(timezone=True),
+    sa_column_kwargs={
+      "server_default": func.now(),
+    },
     description="When the record was created",
   )
   updated_at: datetime = Field(
-    sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now()),
+    default=None,
+    sa_type=DateTime(timezone=True),
+    sa_column_kwargs={
+      "server_default": func.now(),
+      "onupdate": func.now(),
+    },
     description="When the record was last updated",
   )
 
@@ -25,7 +34,8 @@ class UUIDMixin(SQLModel):
 
   id: UUID = Field(
     default_factory=uuid4,
-    sa_column=Column(types.Uuid(as_uuid=True), primary_key=True),
+    primary_key=True,
+    sa_type=types.Uuid(as_uuid=True),
     description="UUID primary key",
   )
 
