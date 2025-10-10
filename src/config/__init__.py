@@ -1,52 +1,59 @@
-"""Application configuration settings."""
+"""Application configuration settings for async-first architecture."""
 
 from pathlib import Path
-from typing import Optional
 from urllib.parse import urlparse
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-  # Legacy test setting
+  """Application settings for async database operations."""
+
+  # Environment test setting
   TEST: str = "UNCONFIGURED"
 
-  # Database settings
-  DATABASE_URL: Optional[str] = None
-  # DATABASE_CONNECTION_STRING: str = "sqlite:///data/app_sqlite.db"
-  DATABASE_CONNECTION_STRING: str = "duckdb:///app.db"
+  # Database settings - async drivers only
+  DATABASE_URL: str = ""  # Required, will be set in constructor if empty
   SQL_ECHO: bool = False
 
-  # Database connection pool settings
+  # Async database connection pool settings
   DATABASE_POOL_SIZE: int = 5
   DATABASE_MAX_OVERFLOW: int = 10
   DATABASE_POOL_TIMEOUT: int = 30
   DATABASE_POOL_RECYCLE: int = 3600
 
-  class Config:
-    env_file = ".env"
-    env_file_encoding = "utf-8"
-    extra = "allow"
+  model_config = SettingsConfigDict(
+    env_file=".env",
+    env_file_encoding="utf-8",
+    extra="allow",
+  )
 
-  def get_database_url(self) -> str:
-    """Get database URL with fallback priority: DATABASE_URL > DATABASE_CONNECTION_STRING > default SQLite."""
-    if self.DATABASE_URL:
-      return self.DATABASE_URL
+  def __init__(self, **values):
+    """Initialize settings with async SQLite fallback for development."""
+    super().__init__(**values)
 
-    if self.DATABASE_CONNECTION_STRING:
-      return self.DATABASE_CONNECTION_STRING
-
-    # Default to local SQLite file in project data directory
-    project_root = Path(__file__).parent.parent.parent
-    db_path = project_root / "data" / "app.db"
-    db_path.parent.mkdir(exist_ok=True)
-
-    return f"sqlite:///{db_path}"
+    # Fallback to async SQLite if no URL provided (development only)
+    if not self.DATABASE_URL:
+      project_root = Path(__file__).parent.parent.parent
+      db_path = project_root / "data" / "app.db"
+      db_path.parent.mkdir(exist_ok=True)
+      self.DATABASE_URL = f"sqlite+aiosqlite:///{db_path}"
 
   def get_database_type(self) -> str:
     """Get database type from connection string."""
-    url = self.get_database_url()
-    return urlparse(url).scheme.split("+")[0]
+    return urlparse(self.DATABASE_URL).scheme.split("+")[0]
+
+  def validate_async_database(self) -> None:
+    """Validate that database URL uses async driver."""
+    async_drivers = {"+asyncpg", "+aiomysql", "+aiosqlite"}
+    if not any(driver in self.DATABASE_URL for driver in async_drivers):
+      raise ValueError(
+        f"Database URL must use async driver. Got: {self.DATABASE_URL}. "
+        f"Supported async drivers: postgresql+asyncpg, mysql+aiomysql, sqlite+aiosqlite"
+      )
 
 
 settings = Settings()
+
+# Validate async configuration on import
+settings.validate_async_database()

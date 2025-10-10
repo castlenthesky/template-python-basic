@@ -1,15 +1,20 @@
 """Database models package."""
 
+from .base import BaseModel, TimestampMixin, UUIDMixin
+from .task import Task, TaskCreate, TaskRead, TaskStatus, TaskUpdate
 from .user import User, UserCreate, UserRead, UserUpdate
-from .task import Task, TaskCreate, TaskRead, TaskUpdate
 
 __all__ = [
-  "User", 
-  "UserCreate", 
-  "UserRead", 
+  "BaseModel",
+  "TimestampMixin",
+  "UUIDMixin",
+  "User",
+  "UserCreate",
+  "UserRead",
   "UserUpdate",
-  "Task", 
-  "TaskCreate", 
-  "TaskRead", 
+  "Task",
+  "TaskCreate",
+  "TaskRead",
   "TaskUpdate",
+  "TaskStatus",
 ]

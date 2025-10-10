@@ -1,11 +1,12 @@
 """User model with SQLModel."""
 
 from datetime import datetime
-from typing import Optional, List, TYPE_CHECKING
-from uuid import UUID, uuid4
-from sqlmodel import SQLModel, Field, Relationship, Column, String, DateTime
-from sqlalchemy import func
-from ..types import GUID
+from typing import TYPE_CHECKING, List, Optional
+from uuid import UUID
+
+from sqlmodel import Column, Field, Relationship, SQLModel, String
+
+from .base import TimestampMixin, UUIDMixin
 
 if TYPE_CHECKING:
   from .task import Task
@@ -13,48 +14,34 @@ if TYPE_CHECKING:
 
 class UserBase(SQLModel):
   """Base user model with shared fields."""
+
   username: str = Field(
     sa_column=Column(String(50), unique=True, nullable=False, index=True),
-    description="Unique username for the user"
+    description="Unique username for the user",
   )
 
 
-class User(UserBase, table=True):
+class User(UserBase, UUIDMixin, TimestampMixin, table=True):
   """User table model."""
-  __tablename__ = "users"
-  
-  id: UUID = Field(
-    default_factory=uuid4,
-    sa_column=Column(GUID(), primary_key=True),
-    description="UUID primary key"
-  )
-  created_at: datetime = Field(
-    sa_column=Column(DateTime(timezone=True), server_default=func.now()),
-    description="When the user was created"
-  )
-  updated_at: datetime = Field(
-    sa_column=Column(
-      DateTime(timezone=True), 
-      server_default=func.now(),
-      onupdate=func.now()
-    ),
-    description="When the user was last updated"
-  )
-  
+
+  __tablename__ = "users"  # type: ignore
+
   # Relationships
   tasks: List["Task"] = Relationship(back_populates="user", cascade_delete=True)
-  
+
   def __str__(self) -> str:
     return f"User(id={self.id}, username='{self.username}')"
 
 
 class UserCreate(UserBase):
   """Model for creating a user."""
+
   pass
 
 
 class UserRead(UserBase):
   """Model for reading a user."""
+
   id: UUID
   created_at: datetime
   updated_at: datetime
@@ -62,8 +49,7 @@ class UserRead(UserBase):
 
 class UserUpdate(SQLModel):
   """Model for updating a user."""
+
   username: Optional[str] = Field(
-    default=None,
-    sa_column=Column(String(50)),
-    description="Updated username"
+    default=None, sa_column=Column(String(50)), description="Updated username"
   )
