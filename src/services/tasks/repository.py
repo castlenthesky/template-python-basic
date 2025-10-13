@@ -1,4 +1,4 @@
-"""Task repository for async data access operations."""
+"""Task repository for data access operations."""
 
 import logging
 from typing import List
@@ -7,14 +7,14 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.task import Task, TaskCreate, TaskStatus, TaskUpdate
-from .base import BaseRepository
+from src.database.models.public.task import Task, TaskCreate, TaskStatus, TaskUpdate
+from ..shared.base_repository import BaseRepository
 
 logger = logging.getLogger(__name__)
 
 
 class TaskRepository(BaseRepository[Task, TaskCreate, TaskUpdate]):
-  """Task repository with specialized async data access methods."""
+  """Task repository for data access operations."""
 
   def __init__(self):
     """Initialize task repository."""
@@ -43,18 +43,6 @@ class TaskRepository(BaseRepository[Task, TaskCreate, TaskUpdate]):
     except Exception as e:
       logger.error(f"Error retrieving tasks with status {status}: {e}")
       raise
-
-  async def get_completed_tasks(self, session: AsyncSession) -> List[Task]:
-    """Get all completed tasks."""
-    return await self.get_by_status(session, TaskStatus.COMPLETED)
-
-  async def get_pending_tasks(self, session: AsyncSession) -> List[Task]:
-    """Get all pending tasks."""
-    return await self.get_by_status(session, TaskStatus.PENDING)
-
-  async def get_in_progress_tasks(self, session: AsyncSession) -> List[Task]:
-    """Get all in-progress tasks."""
-    return await self.get_by_status(session, TaskStatus.IN_PROGRESS)
 
   async def search_by_title(self, session: AsyncSession, title_search: str) -> List[Task]:
     """Search tasks by title (case-insensitive partial match)."""

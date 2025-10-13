@@ -18,9 +18,8 @@ from src.database import get_async_db_connection
 from src.database.models.task import TaskCreate
 from src.database.models.user import UserCreate, UserRead
 from src.database.engine import get_async_engine
-from src.database.repositories import UserRepository, TaskRepository
-from src.services.operations.task_ops import TaskService
-from src.services.operations.user_ops import UserService
+from src.services.users.service import UserService
+from src.services.tasks.service import TaskService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -66,10 +65,6 @@ async def async_database_example():
     
     # Get async database connection for high-performance operations
     async_db = get_async_db_connection()
-    
-    # Initialize async repositories for data access layer
-    user_repo = UserRepository()
-    task_repo = TaskRepository()
     
     # Initialize async service layer for business logic
     user_service = UserService()

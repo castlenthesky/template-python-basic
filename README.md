@@ -21,15 +21,45 @@ uv sync
 
 ## Repository Structure
 ```
-my_project/
-├── src/
-│   ├── api/                  # simple FastAPI example
-│   ├── config/               # application settings and configuration
-│   ├── dagster_definitions/  # example dagster asset definitions
-│   └── main.py
-├── .env
+.
+├── docker
+├── scripts
+├── src
+│   ├── main.py
+│   ├── api
+│   │   ├── features
+│   │   │   ├── health
+│   │   │   ├── tasks
+│   │   │   └── users
+│   │   ├── middleware
+│   │   └── server.py
+│   ├── config
+│   ├── dagster_definitions
+│   ├── database
+│   │   ├── README.md
+│   │   ├── __init__.py
+│   │   ├── connection.py
+│   │   ├── engine.py
+│   │   ├── migrations
+│   │   ├── models
+│   │   └── seeds
+│   └── services
+│       ├── __init__.py
+│       ├── shared
+│       ├── tasks
+│       └── users
+├── tests
+│   ├── conftest.py
+│   ├── e2e
+│   ├── fixtures
+│   ├── integration
+│   ├── mocks
+│   └── unit
+├── .env.EXAMPLE
+├── alembic.ini
 ├── pyproject.toml
-└── README.md
+├── README.md
+└── uv.lock
 ```
 
 

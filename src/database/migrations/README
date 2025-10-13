@@ -1,1 +1,62 @@
-Generic single-database configuration.
+# Alembic Environment Configuration Guide (env.py)
+
+Hey there, junior developer! As your principal engineer, I'm here to walk you through our Alembic setup in the `migrations/env.py` file. This is the heart of our database migration system, and understanding it will help you confidently create, apply, and troubleshoot migrations in our async-first Python project using SQLModel, SQLAlchemy, and PostgreSQL. Think of this README as your go-to reference: I'll explain what the file does, how it's structured, and—most importantly—why we've configured it this way. We'll draw from Alembic's best practices and community integrations with SQLModel to keep things grounded in real-world wisdom. By the end, you'll know when to tweak it and why certain choices make our project more robust and scalable.
+
+### Key Principles for Alembic Configuration
+- **Async-First Design**: We use async engines and connections (e.g., via asyncpg for Postgres) to align with our app's async nature (think FastAPI). This ensures migrations run efficiently without blocking.
+- **Offline and Online Modes**: The script supports generating migrations without a DB connection (offline) for CI/CD pipelines, and live executions (online) for dev/prod.
+- **Central Model Imports**: All SQLModel models are imported early to register with `SQLModel.metadata`, enabling autogeneration of schema changes.
+- **Config Overrides**: We pull the DB URL from `src.config.settings` for consistency across environments, and enable features like schema support and batch rendering.
+- **Logging and Error Handling**: Built-in logging helps debug issues, and try-except blocks prevent silent failures.
+
+These principles follow Alembic's recommendations for async setups, making our migrations reliable and easy to maintain as the project grows.
+
+### Why This Structure?
+Our `env.py` is customized for an async architecture because standard Alembic templates are sync-only, which wouldn't play well with our async SQLModel sessions and Postgres driver (asyncpg). By wrapping sync migration logic in async functions (e.g., `run_async_migrations`), we ensure compatibility—migrations can await connections without hacks. This setup draws from SQLModel's async guides and Alembic's async extensions, preventing common pitfalls like connection pool mismatches or dialect errors.
+
+- **Why Import Models and Set Metadata?** Registering `target_metadata = SQLModel.metadata` allows Alembic to detect changes (e.g., new columns) by comparing against our models in `src.database.models`. Importing via `from src.database.models import *` (in the full setup) ensures all tables are known, avoiding incomplete migrations. Without this, autogenerate would miss schemas or relationships.
+- **Why Async Engine Creation?** Using `async_engine_from_config` with `NullPool` optimizes for short-lived migration runs—no need for persistent pools. It supports our Postgres URL format (`postgresql+asyncpg://...`), and `run_sync` bridges async to sync for Alembic's core (which isn't fully async yet).
+- **Why Offline Mode?** In CI or when DB access is unavailable, `run_migrations_offline` generates scripts using literal binds and dialect opts. This speeds up reviews and tests, as per Alembic docs for production workflows.
+- **Why Logging and Path Adjustments?** Adding `sys.path.insert` ensures model imports work from the migrations dir, and custom logging provides visibility (e.g., "Migration execution completed"). This reduces "mystery failures" in team environments.
+- **Why Extra Flags like `include_schemas=True`?** Our multi-schema setup (e.g., 'public', 'stratsim') requires this to handle namespaced tables properly. `compare_type=True` catches type changes (e.g., VARCHAR length), and `render_as_batch=True` future-proofs for other DBs like SQLite.
+
+Overall, this configuration promotes reliability: It handles async realities, supports our folder structure, and aligns with best practices from tutorials integrating Alembic with SQLModel/FastAPI. Without these tweaks, you'd face sync/async mismatches or missed schema diffs—issues that plague many projects.
+
+### How to Use or Customize env.py
+1. **Running Migrations**: Use `alembic upgrade head` for online mode (needs DB). For offline script gen: `alembic revision --autogenerate -m "Add new table"`.
+2. **Adding Features**: If we add schemas, update `include_object` filters here to target them (e.g., for selective migrations).
+3. **Troubleshooting**: Check logs for errors. If paths break, verify `project_root` calculation—it's relative to `env.py`.
+4. **Extending for New DBs**: Swap dialects in URL; the script's robust extraction (`make_url(url).drivername`) handles it.
+5. **Environment Setup**: Ensure `alembic.ini` points to this `env.py` and `settings.DATABASE_URL` is env-loaded.
+
+If you're adding a new model, remember to import it in `env.py` or the central `__init__.py`—test with `alembic revision --autogenerate` to confirm detection.
+
+### Handling Common Challenges
+- **Async/Sync Mismatches**: Use `connection.run_sync` to wrap sync code—avoids "greenlet" errors common in async Alembic.
+- **Path Issues**: The `sys.path` hack fixes import failures when running from `migrations/`; it's a standard workaround for monorepos.
+- **Offline Limitations**: No real DB means no server defaults comparison—always test online after generating.
+- **Multi-Schema Gotchas**: Qualify relationships fully (e.g., `ForeignKey("schema.table.id")`) in models; `include_schemas=True` helps Alembic see them.
+- **Error Recovery**: The try-except in async runs logs failures without crashing the process, giving you clues for fixes.
+
+### Comparison of Configuration Approaches
+To show why our setup shines, here's a table of common Alembic configs, with rationale for ours:
+
+| Approach | Description | Pros | Cons | Why Not for Us? |
+|----------|-------------|------|------|-----------------|
+| **Default Sync Template** | Basic Alembic env.py with sync engines. | Simple setup; works for small sync apps. | No async support; blocks in our FastAPI world. | Our project is async-heavy—would cause perf issues. |
+| **Full Async Rewrite** | Rewrite all Alembic internals for async. | Pure async; future-proof. | Complex; not officially supported yet. | Overkill—Alembic's hybrid (run_sync) suffices reliably. |
+| **No Metadata/Imports** | Skip model imports; manual migrations only. | Quick for tiny projects. | No autogenerate; error-prone for changes. | We need auto-detection for our evolving schemas. |
+| **Our Hybrid Async** | Async engine + sync wrapper, with schema/logging extras. | Balances async compat, autogenerate, and robustness. | Slight boilerplate (e.g., path fixes). | Chosen for practicality: Matches SQLModel guides and scales well. |
+
+### Best Practices Backed by Sources
+This env.py follows Alembic's async migration patterns, SQLModel's integration tips, and community blogs for FastAPI/Postgres stacks. For example, tutorials emphasize async engines for non-blocking ops, and offline mode for safe CI. In larger apps, adding `compare_*` flags catches subtle changes, as noted in Alembic issues. Always version-control `alembic.ini` alongside this for team consistency.
+
+If something's unclear, let's pair-program a migration—hands-on is the best teacher!
+
+## Key Citations
+- [Alembic Documentation: Environment Configuration](https://alembic.sqlalchemy.org/en/latest/tutorial.html#the-migration-environment)
+- [FastAPI with Async SQLAlchemy, SQLModel, and Alembic](https://testdriven.io/blog/fastapi-sqlmodel/)
+- [Asynchronous I/O (asyncio) Support in Alembic](https://alembic.sqlalchemy.org/en/latest/asyncio.html)
+- [SQLModel Tutorial: Migrations with Alembic](https://sqlmodel.tiangolo.com/tutorial/alembic/)
+- [Handling Multiple Schemas with Alembic](https://stackoverflow.com/questions/75543003/how-can-i-use-multiple-postgres-schemas-with-sqlalchemy-and-alembic)
+- [Best Practices for Alembic in Async Projects](https://www.amitavroy.com/articles/database-migrations-with-python-why-alembic-sqlmodel-is-the-perfect-combo)

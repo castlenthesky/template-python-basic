@@ -9,16 +9,12 @@ src/database/              # ASYNC-FIRST DATABASE LAYER (Zero Business Logic)
 ├── __init__.py           # Clean async API exports
 ├── connection.py         # Async database connection & health utilities  
 ├── engine.py             # Async database engine configuration
+├── seeds/                # Seed data for initial database population
 ├── models/               # SQLModel table definitions with async support
 │   ├── __init__.py       # Model exports with mixins
 │   ├── base.py           # Reusable model mixins (UUIDMixin, TimestampMixin)
 │   ├── user.py           # User model & schemas
 │   └── task.py           # Task model & schemas
-├── repositories/         # Async data access layer (CRUD only)
-│   ├── __init__.py       # Repository exports
-│   ├── base.py           # Async base repository with common operations
-│   ├── user.py           # User-specific async data queries
-│   └── task.py           # Task-specific async data queries
 └── migrations/           # Async Alembic migration management
     ├── env.py            # Async migration configuration
     └── versions/         # Migration version files

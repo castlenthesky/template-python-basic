@@ -2,6 +2,10 @@
 .assets/
 .temp_dagster/
 .dagster/
+.data/**
+!.data/.gitkeep
+.temp/**
+!.temp/.gitkeep
 
 # Misc
 manuals/

@@ -1,4 +1,4 @@
-"""User repository for async data access operations."""
+"""User repository for data access operations."""
 
 import logging
 from typing import List, Optional, Tuple
@@ -7,15 +7,15 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.task import Task
-from ..models.user import User, UserCreate, UserUpdate
-from .base import BaseRepository
+from src.database.models.public.task import Task
+from src.database.models.public.user import User, UserCreate, UserUpdate
+from ..shared.base_repository import BaseRepository
 
 logger = logging.getLogger(__name__)
 
 
 class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
-  """User repository with specialized async data access methods."""
+  """User repository for data access operations."""
 
   def __init__(self):
     """Initialize user repository."""
@@ -50,7 +50,6 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
       result = await session.execute(statement)
       user = result.scalar_one_or_none()
       if user:
-        # Force loading of tasks relationship
         _ = user.tasks
         logger.debug(f"Retrieved user with tasks: {user.username} ({len(user.tasks)} tasks)")
       return user
