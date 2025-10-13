@@ -2,13 +2,14 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, ClassVar, Optional
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, types
+from sqlalchemy import ForeignKey, Integer, types
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, String, Text
 
-from .base import TimestampMixin, UUIDMixin
+from ..base import TimestampMixin, UUIDMixin
+from .base import ExampleBase
 
 if TYPE_CHECKING:
   from .user import User
@@ -23,12 +24,20 @@ class TaskStatus(str, Enum):
   CANCELLED = "cancelled"
 
 
-class TaskBase(SQLModel):
+class TaskBase(ExampleBase):
   """Base task model with shared fields."""
 
   title: str = Field(sa_column=Column(String(200), nullable=False), description="Task title")
   description: Optional[str] = Field(
     default=None, sa_column=Column(Text), description="Detailed task description"
+  )
+  priority: Optional[int] = Field(
+    default=None,
+    sa_column=Column(Integer),
+    description="Task priority, 1 is the highest, 5 is the lowest",
+  )
+  due_date: Optional[datetime] = Field(
+    default=None, sa_column=Column(DateTime(timezone=True)), description="When the task is due"
   )
   status: TaskStatus = Field(
     default=TaskStatus.PENDING,
@@ -44,7 +53,7 @@ class TaskBase(SQLModel):
 class Task(TaskBase, UUIDMixin, TimestampMixin, table=True):
   """Task table model."""
 
-  __tablename__ = "tasks"  # type: ignore
+  __tablename__: ClassVar[str] = "tasks"
 
   completed_at: Optional[datetime] = Field(
     default=None,

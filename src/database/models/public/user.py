@@ -1,12 +1,10 @@
 """User model with SQLModel."""
 
-from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
-from uuid import UUID
 
 from sqlmodel import Column, Field, Relationship, SQLModel, String
 
-from .base import TimestampMixin, UUIDMixin
+from ..base import TimestampMixin, UUIDMixin
 
 if TYPE_CHECKING:
   from .task import Task

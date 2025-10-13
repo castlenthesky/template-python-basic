@@ -1,13 +1,24 @@
-"""Database models package."""
-
 from .base import BaseModel, TimestampMixin, UUIDMixin
-from .task import Task, TaskCreate, TaskRead, TaskStatus, TaskUpdate
-from .user import User, UserCreate, UserRead, UserUpdate
+from .public import (
+  ExampleBase,
+  Task,
+  TaskCreate,
+  TaskRead,
+  TaskStatus,
+  TaskUpdate,
+  User,
+  UserCreate,
+  UserRead,
+  UserUpdate,
+)
 
 __all__ = [
+  # base schema components
   "BaseModel",
   "TimestampMixin",
   "UUIDMixin",
+  # public schema components
+  "ExampleBase",
   "User",
   "UserCreate",
   "UserRead",

@@ -4,7 +4,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlalchemy import func, types
-from sqlmodel import Column, DateTime, Field, SQLModel
+from sqlmodel import DateTime, Field, SQLModel
 
 
 class TimestampMixin(SQLModel):

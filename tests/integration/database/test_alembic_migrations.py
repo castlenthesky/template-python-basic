@@ -11,8 +11,7 @@ from alembic import command
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
 
-from src.database.models.user import User
-from src.database.models.task import Task
+from src.database.models import User, Task
 
 
 class TestAlembicMigrations:
