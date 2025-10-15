@@ -14,5 +14,7 @@ if __name__ == "__main__":
         "src.api.server:app", 
         host="0.0.0.0", 
         port=settings.API_PORT, 
-        reload=hot_reload
+        reload=hot_reload,
+        reload_dirs=["src"],
+        reload_excludes=["__pycache__", "*.pyc", "*.pyo", "*.pyd", "*.pyw", "*.pyz"]
     )

@@ -39,12 +39,12 @@ class Settings(BaseSettings):
   # Constructed Database URL - async drivers only
   DATABASE_URL: str = ""  # Will be set in constructor
   DATABASE_URL_SYNC: str = ""  # Will be set in constructor
-
-  # Connection pool settings
-  DATABASE_POOL_SIZE: int = 5
-  DATABASE_MAX_OVERFLOW: int = 10
-  DATABASE_POOL_TIMEOUT: int = 30
-  DATABASE_POOL_RECYCLE: int = 3600
+  
+  # Database debugging (used in async mode)
+  SQL_ECHO: bool = False
+  
+  # Async connection settings
+  DATABASE_POOL_RECYCLE: int = 3600  # Connection recycling interval
 
   # Dagster Configuration
   DAGSTER_DB_NAME: str = "system_dagster"
@@ -76,7 +76,6 @@ class Settings(BaseSettings):
     self.DATABASE_URL = f"{self.DB_SCHEME}+{self.DB_DRIVER}://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
     self.DATABASE_URL_SYNC = f"{self.DB_SCHEME}://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
     self.DAGSTER_DATABASE_URL = f"{self.DB_SCHEME}://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DAGSTER_DB_NAME}"
-    print(f"DAGSTER_DATABASE_URL: {self.DAGSTER_DATABASE_URL}")
 
   def configure_dagster(self) -> None:
     """Generate the Dagster configuration file."""

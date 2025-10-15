@@ -4,7 +4,7 @@ import logging
 from functools import lru_cache
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from sqlalchemy.pool import NullPool, QueuePool
+from sqlalchemy.pool import NullPool
 
 from ..config import settings
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_async_engine_config() -> dict:
-    """Get async engine configuration based on database type."""
+    """Get async engine configuration for async-first applications."""
     database_type = settings.get_database_type()
     
     # Base configuration for async engines
@@ -29,13 +29,9 @@ def _get_async_engine_config() -> dict:
             "poolclass": NullPool,
         })
     else:
-        # PostgreSQL, MySQL - use connection pooling
-        engine_kwargs.update({
-            "poolclass": QueuePool,
-            "pool_size": settings.DATABASE_POOL_SIZE,
-            "max_overflow": settings.DATABASE_MAX_OVERFLOW,
-            "pool_timeout": settings.DATABASE_POOL_TIMEOUT,
-        })
+        # PostgreSQL, MySQL - use SQLAlchemy's default async pooling
+        # Don't specify poolclass - let SQLAlchemy handle async-compatible pooling
+        pass
     
     return engine_kwargs
 
@@ -66,20 +62,18 @@ def create_async_engine_for_url(database_url: str) -> AsyncEngine:
     from urllib.parse import urlparse
     database_type = urlparse(database_url).scheme.split("+")[0]
     
-    # Configure engine based on type
+    # Configure engine based on type - async-first approach
     engine_kwargs = {
         "echo": settings.SQL_ECHO,
         "pool_pre_ping": True,
+        "pool_recycle": settings.DATABASE_POOL_RECYCLE,
     }
     
     if database_type == "sqlite":
         engine_kwargs["poolclass"] = NullPool
     else:
-        engine_kwargs.update({
-            "poolclass": QueuePool,
-            "pool_size": settings.DATABASE_POOL_SIZE,
-            "max_overflow": settings.DATABASE_MAX_OVERFLOW,
-        })
+        # For PostgreSQL/MySQL - let SQLAlchemy handle async pooling
+        pass
     
     return create_async_engine(database_url, **engine_kwargs)
 

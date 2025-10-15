@@ -184,13 +184,6 @@ DATABASE_URL=mysql+aiomysql://user:password@host:3306/dbname
 # Development & Testing (Async)
 DATABASE_URL=sqlite+aiosqlite:///data/app.db
 DATABASE_URL=sqlite+aiosqlite:///:memory:  # In-memory for tests
-
-# Connection Pool Settings (Optional)
-DATABASE_POOL_SIZE=5
-DATABASE_MAX_OVERFLOW=10
-DATABASE_POOL_TIMEOUT=30
-DATABASE_POOL_RECYCLE=3600
-SQL_ECHO=false  # Enable for development debugging
 ```
 
 ## 🗃️ Models & Mixins
