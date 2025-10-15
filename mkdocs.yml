@@ -1,0 +1,21 @@
+site_name: My Project Docs
+docs_dir: ./docs
+site_description: Documentation for my FastAPI project
+site_author: Your Name
+repo_url: https://github.com/yourusername/yourproject
+theme:
+  name: material
+  palette:
+    # - scheme: default  # Light mode
+    #   primary: indigo
+    #   accent: indigo
+    - scheme: slate    # Dark mode
+      primary: blue grey
+      accent: blue grey
+  features:
+    - navigation.tabs
+    - search.suggest
+nav:
+  - Home: docs/index.md
+  - Getting Started: getting-started.md
+  - API Reference: api.md

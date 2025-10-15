@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from src.api.features.health.router import health_router
 from src.api.features.users.router import users_router
 from src.api.features.tasks.router import tasks_router
+from src.api.features.docs.router import docs_router
 from src.api.middleware.cors_middleware import configure_cors_middleware
 from src.api.middleware.error_handling import configure_error_handling
 from src.database import get_async_db_connection
@@ -48,6 +49,7 @@ configure_error_handling(app)
 app.include_router(health_router, prefix="/health", tags=["Health"])
 app.include_router(users_router, prefix="/users", tags=["Users"])
 app.include_router(tasks_router, prefix="/tasks", tags=["Tasks"])
+app.include_router(docs_router, prefix="/user_docs", tags=["Docs"])
 
 
 @app.get("/")
