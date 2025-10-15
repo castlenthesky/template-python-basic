@@ -6,6 +6,7 @@ from uuid import UUID
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.database.models.public.task import Task
 from src.database.models.public.user import User, UserCreate, UserUpdate
@@ -44,13 +45,12 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
       raise
 
   async def get_user_with_tasks(self, session: AsyncSession, user_id: UUID) -> Optional[User]:
-    """Get user with their tasks loaded."""
+    """Get user with their tasks loaded using eager loading to prevent N+1 queries."""
     try:
-      statement = select(User).where(User.id == user_id)
+      statement = select(User).options(selectinload(User.tasks)).where(User.id == user_id)
       result = await session.execute(statement)
       user = result.scalar_one_or_none()
       if user:
-        _ = user.tasks
         logger.debug(f"Retrieved user with tasks: {user.username} ({len(user.tasks)} tasks)")
       return user
     except Exception as e:

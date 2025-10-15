@@ -6,19 +6,20 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models.public.user import User, UserCreate
+from src.database.models.public.user import User, UserCreate, UserUpdate
 from ..shared.exceptions import DuplicateError, NotFoundError
+from ..shared.transaction import TransactionalService
 from .repository import UserRepository
 
 logger = logging.getLogger(__name__)
 
 
-class UserService:
+class UserService(TransactionalService):
   """User service with business logic methods."""
 
-  def __init__(self):
-    """Initialize user service."""
-    self._repository = UserRepository()
+  def __init__(self, repository: UserRepository):
+    """Initialize user service with repository dependency."""
+    self._repository = repository
 
   async def get_by_username(self, session: AsyncSession, username: str) -> Optional[User]:
     """Get user by username."""
@@ -30,13 +31,16 @@ class UserService:
 
   async def create_user(self, session: AsyncSession, user_create: UserCreate) -> User:
     """Create a new user with validation."""
-    try:
-      if await self.username_exists(session, user_create.username):
+    async def _create_user_operation(db_session: AsyncSession) -> User:
+      if await self.username_exists(db_session, user_create.username):
         raise DuplicateError(f"Username '{user_create.username}' already exists")
 
-      user = await self._repository.create(session, user_create)
+      user = await self._repository.create(db_session, user_create)
       logger.info(f"Successfully created user: {user_create.username}")
       return user
+
+    try:
+      return await self.execute_in_transaction(session, _create_user_operation)
     except Exception as e:
       logger.error(f"Error creating user {user_create.username}: {e}")
       raise
@@ -61,7 +65,28 @@ class UserService:
 
   async def delete(self, session: AsyncSession, user_id: UUID) -> Optional[User]:
     """Delete user by ID."""
-    user = await self._repository.get(session, user_id)
-    if not user:
-      raise NotFoundError(f"User with ID {user_id} not found")
     return await self._repository.delete(session, user_id)
+
+  async def update_user(self, session: AsyncSession, user_id: UUID, user_update: UserUpdate) -> User:
+    """Update user with validation and transaction support."""
+    async def _update_user_operation(db_session: AsyncSession) -> User:
+      # Get existing user
+      user = await self._repository.get(db_session, user_id)
+      if not user:
+        raise NotFoundError(f"User with ID {user_id} not found")
+      
+      # Check for username conflicts if username is being updated
+      if user_update.username and user_update.username != user.username:
+        if await self.username_exists(db_session, user_update.username):
+          raise DuplicateError(f"Username '{user_update.username}' already exists")
+      
+      # Update the user
+      updated_user = await self._repository.update(db_session, user, user_update)
+      logger.info(f"Successfully updated user: {user.username}")
+      return updated_user
+
+    try:
+      return await self.execute_in_transaction(session, _update_user_operation)
+    except Exception as e:
+      logger.error(f"Error updating user {user_id}: {e}")
+      raise

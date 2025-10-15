@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING, List, Optional
 
+from sqlalchemy import Index
 from sqlmodel import Column, Field, Relationship, SQLModel, String
 
 from ..base import TimestampMixin, UUIDMixin
@@ -26,6 +27,12 @@ class User(UserBase, UUIDMixin, TimestampMixin, table=True):
 
   # Relationships
   tasks: List["Task"] = Relationship(back_populates="user", cascade_delete=True)
+  
+  # Indexes for optimized queries
+  __table_args__ = (
+    # Index for created_at for time-based user queries
+    Index("idx_user_created_at", "created_at"),
+  )
 
   def __str__(self) -> str:
     return f"User(id={self.id}, username='{self.username}')"
