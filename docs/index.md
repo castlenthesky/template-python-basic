@@ -1,17 +1,47 @@
-# Welcome to MkDocs
+# Welcome to Template Python Basic Documentation
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+This is the documentation hub for the Template Python Basic project - a FastAPI-based application with async database support and modular architecture.
 
-## Commands
+![Beautiful sunset over mountains](assets/sunset.jpg)
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+## Quick Navigation
 
-## Project layout
+### Getting Started
+- [Getting Started Guide](getting-started) - Setup and installation instructions
+- [Configuration](configuration) - Environment variables and settings
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+### API Documentation  
+- [API Guide](api/index) - Detailed endpoint documentation
+- [Health Checks](api/health) - System health monitoring
+
+### Setup Guides
+- [Database Setup](setup/index) - Database configuration and migrations
+- [Development Environment](setup/development) - Local development setup
+
+## Project Structure
+
+```
+src/
+├── api/              # FastAPI routes and endpoints
+├── database/         # Database models and connections
+├── services/         # Business logic layer
+└── config/          # Configuration management
+```
+
+## Features
+
+- **FastAPI Framework**: Modern, fast web framework for building APIs
+- **Async Database**: SQLAlchemy with async support
+- **Modular Architecture**: Clean separation of concerns
+- **Type Safety**: Full typing with Pydantic models  
+- **Documentation**: Auto-generated API docs and this guide system
+
+## Quick Links
+
+- [View API Documentation](../docs) - Interactive API docs
+- [Health Check](../health) - System status
+- [GitHub Repository](#) - Source code
+
+---
+
+*This documentation is served dynamically from markdown files and supports nested navigation, cross-references, and embedded assets.*

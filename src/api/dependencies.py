@@ -10,6 +10,7 @@ from src.services.users.repository import UserRepository
 from src.services.tasks.service import TaskService
 from src.services.tasks.repository import TaskRepository
 from src.services.health.service import HealthService
+from src.services.guide.service import DocumentService
 
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
@@ -45,3 +46,8 @@ def get_task_service() -> TaskService:
 def get_health_service() -> HealthService:
     """Dependency to provide health service."""
     return HealthService()
+
+
+def get_document_service() -> DocumentService:
+    """Dependency to provide document service."""
+    return DocumentService()

@@ -3,10 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.api.features.health.router import health_router
-from src.api.features.users.router import users_router
-from src.api.features.tasks.router import tasks_router
-from src.api.features.guide.router import guide_router
+from src.api.features.router import router
 from src.api.middleware.cors_middleware import configure_cors_middleware
 from src.api.middleware.error_handling import configure_error_handling
 from src.database import get_async_db_connection
@@ -46,10 +43,7 @@ app = FastAPI(
 configure_cors_middleware(app)
 configure_error_handling(app)
 
-app.include_router(health_router, prefix="/health", tags=["Health"])
-app.include_router(users_router, prefix="/users", tags=["Users"])
-app.include_router(tasks_router, prefix="/tasks", tags=["Tasks"])
-app.include_router(guide_router, prefix="/guide", tags=["Guide"])
+app.include_router(router)
 
 
 @app.get("/")
