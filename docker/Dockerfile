@@ -23,12 +23,12 @@ FROM python:3.13-slim-bookworm AS production
 
 # The following secrets are available during build time
 RUN --mount=type=secret,id=DB_PASSWORD \
---mount=type=secret,id=DB_USER \
+--mount=type=secret,id=DB_USERNAME \
 --mount=type=secret,id=DB_NAME \
 --mount=type=secret,id=DB_HOST \
 --mount=type=secret,id=ACCESS_TOKEN_SECRET_KEY \
 DB_PASSWORD=/run/secrets/DB_PASSWORD \
-DB_USER=$(cat /run/secrets/DB_USER) \
+DB_USERNAME=$(cat /run/secrets/DB_USERNAME) \
 DB_NAME=$(cat /run/secrets/DB_NAME) \
 DB_HOST=$(cat /run/secrets/DB_HOST) \
 ACCESS_TOKEN_SECRET_KEY=$(cat /run/secrets/ACCESS_TOKEN_SECRET_KEY)

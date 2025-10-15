@@ -53,6 +53,45 @@
   },
   // Extension Recommendations
   "workbench.remoteIndicator.showExtensionRecommendations": true,
+  // Icon Examples here: https://raw.githubusercontent.com/material-extensions/vscode-material-icon-theme/main/images/folderIcons.png
+  "material-icon-theme.folders.customClones": [
+    {
+      "name": "dagster-definitions",
+      "base": "context",
+      "color": "purple-300",
+      "lightColor": "purple",
+      "folderNames": [
+        "definitions"
+      ],
+    },
+    {
+      "name": "features",
+      "base": "template",
+      "color": "grey",
+      "lightColor": "blue",
+      "folderNames": [
+        "features"
+      ],
+    },
+    {
+      "name": "feature-users",
+      "base": "admin",
+      "color": "blue-400",
+      "lightColor": "blue",
+      "folderNames": [
+        "users"
+      ],
+    },
+    {
+      "name": "feature-health",
+      "base": "resolver",
+      "color": "green-500",
+      "lightColor": "green",
+      "folderNames": [ // Name of folders you want to associate with the custom clone
+        "health"
+      ],
+    },
+  ],
   "recommendations": [
     "ms-vscode-remote.remote-wsl",
     "yzhang.markdown-all-in-one",

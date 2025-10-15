@@ -9,39 +9,83 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
   """Application settings for async database operations."""
 
-  # Environment test setting
-  TEST: str = "UNCONFIGURED"
+  model_config = SettingsConfigDict(
+      env_file=".env",
+      env_file_encoding="utf-8",
+      extra="allow",
+  )
 
-  # Database settings - async drivers only
-  DATABASE_URL: str = ""  # Required, will be set in constructor if empty
-  SQL_ECHO: bool = False
+  # Application Settings
+  ENVIRONMENT_PROPOGATION_VALUE: str = "UNCONFIGURED"
+  ENVIRONMENT: str = "development"
 
-  # Async database connection pool settings
+  API_PORT: int = 8000
+  API_URL: str = "http://localhost:8000"
+
+  # ===================================================
+  # ################ Database Settings ################
+  # ===================================================
+  # Shared DB config vars
+  DB_TYPE: str = "postgres"  # postgres, mysql, or sqlite
+  DB_USERNAME: str = "postgres"
+  DB_PASSWORD: str = "password"
+  DB_HOST: str = "localhost"
+  DB_PORT: int = 5432
+  DB_NAME: str = "postgres"
+  SQLITE_BASE_DIR: str = './data/db'
+  DB_SCHEME: str = "" # Will be set in constructor
+  DB_DRIVER: str = "" # Will be set in constructor
+
+  # Constructed Database URL - async drivers only
+  DATABASE_URL: str = ""  # Will be set in constructor
+  DATABASE_URL_SYNC: str = ""  # Will be set in constructor
+
+  # Connection pool settings
   DATABASE_POOL_SIZE: int = 5
   DATABASE_MAX_OVERFLOW: int = 10
   DATABASE_POOL_TIMEOUT: int = 30
   DATABASE_POOL_RECYCLE: int = 3600
 
-  model_config = SettingsConfigDict(
-    env_file=".env",
-    env_file_encoding="utf-8",
-    extra="allow",
-  )
+  # Dagster Configuration
+  DAGSTER_DB_NAME: str = "system_dagster"
 
+
+  # ===================================================
+  # ############## Settings Initialization ############
+  # ===================================================
   def __init__(self, **values):
-    """Initialize settings with async SQLite fallback for development."""
+    """Initialize settings with async driver based on DB_TYPE."""
     super().__init__(**values)
+    self.configure_database_connections(self.DB_TYPE)
+    self.configure_dagster()
 
-    # Fallback to async SQLite if no URL provided (development only)
-    if not self.DATABASE_URL:
-      project_root = Path(__file__).parent.parent.parent
-      db_path = project_root / "data" / "app.db"
-      db_path.parent.mkdir(exist_ok=True)
-      self.DATABASE_URL = f"sqlite+aiosqlite:///{db_path}"
+  def configure_database_connections(self, database_type: str) -> None:
+    match (database_type):
+      case "postgres":
+        self.DB_SCHEME = "postgresql"
+        self.DB_DRIVER = "asyncpg"
+      case "mysql":
+        self.DB_SCHEME = "mysql"
+        self.DB_DRIVER = "aiomysql"
+      case "sqlite":
+        self.DB_SCHEME = "sqlite"
+        self.DB_DRIVER = "aiosqlite"
+      case _:
+          raise ValueError(f"Unsupported database type: {database_type}")
+    """Configure the base database URL."""
+    self.DATABASE_URL = f"{self.DB_SCHEME}+{self.DB_DRIVER}://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+    self.DATABASE_URL_SYNC = f"{self.DB_SCHEME}://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+    self.DAGSTER_DATABASE_URL = f"{self.DB_SCHEME}://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DAGSTER_DB_NAME}"
+    print(f"DAGSTER_DATABASE_URL: {self.DAGSTER_DATABASE_URL}")
+
+  def configure_dagster(self) -> None:
+    """Generate the Dagster configuration file."""
+    pass
+
 
   def get_database_type(self) -> str:
-    """Get database type from connection string."""
-    return urlparse(self.DATABASE_URL).scheme.split("+")[0]
+      """Get database type from connection string."""
+      return urlparse(self.DATABASE_URL).scheme.split("+")[0]
 
   def validate_async_database(self) -> None:
     """Validate that database URL uses async driver."""
@@ -51,6 +95,11 @@ class Settings(BaseSettings):
         f"Database URL must use async driver. Got: {self.DATABASE_URL}. "
         f"Supported async drivers: postgresql+asyncpg, mysql+aiomysql, sqlite+aiosqlite"
       )
+
+  @property
+  def is_production(self) -> bool:
+    """Check if running in production environment."""
+    return self.ENVIRONMENT.lower() == "production"
 
 
 settings = Settings()

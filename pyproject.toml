@@ -27,6 +27,7 @@ dev = [
   "ipykernel>=6.29.5",
   "ipywidgets>=8.1.5",
   "dagster-webserver>=1.11.4",
+  "dagster-postgres>=0.27.14",
 ]
 
 [build-system]
@@ -47,11 +48,18 @@ indent-width = 2
 indent-style = "space"
 
 # Dagster configuration
-[tool.dagster]
-code_location_name = "my_project"
-modules=[
-  {type = "module", name = "src.dagster_definitions"},
-]
+[tool.dg.project]
+code_location_name = "my_custom_location_name"
+# Required: The root module of your project (base package name).
+# If your definitions are in src.dagster_definitions, this could be "src" if src is the package root.
+root_module = "src"
+# Optional: The submodule where the top-level Definitions object is located for loading as a code location.
+# This is the equivalent to pointing to your module in the old load_from syntax.
+# Defaults to <root_module>.definitions if omitted.
+# code_location_target_module = "src.definitions"
+
+
+
 
 # Pytest configuration
 [tool.pytest.ini_options]

@@ -1,0 +1,98 @@
+name: my_project_template
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-db
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-postgres}
+    env_file:
+      - ../.env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    command: >
+      bash -c "
+        docker-entrypoint.sh postgres &
+        sleep 10 &&
+        psql -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-postgres} -c 'CREATE DATABASE system_dagster;' || true
+        wait
+      "
+    
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-db
+    ports:
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC API
+    env_file:
+      - ../.env
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j-db
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      NEO4J_AUTH: ${NEO4J_USERNAME:-neo4j}/${NEO4J_PASSWORD:-your-password}
+    env_file:
+      - ../.env
+    volumes:
+      - neo4j-data:/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio-storage
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    env_file:
+      - ../.env
+    volumes:
+      - minio-data:/data
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: app-server
+    ports:
+      - "8000:8000"  # FastAPI
+      - "3000:3000"  # Dagster webserver
+    environment:
+      DAGSTER_DATABASE_URL: postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@postgres:5432/system_dagster
+    env_file:
+      - ../.env
+    volumes:
+      - ../src:/app/src
+      - ../dagster.yaml:/app/dagster.yaml
+      - ../scripts:/app/scripts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["bash", "/app/scripts/start_services.sh"]
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  qdrant-data:
+  neo4j-data:
+  minio-data:
