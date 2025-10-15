@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from src.api.features.health.router import health_router
 from src.api.middleware.cors_middleware import configure_cors_middleware
 from src.database import get_async_db_connection
-
+from src.config import settings
 logger = logging.getLogger(__name__)
 
 
@@ -31,11 +31,11 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="My FastAPI Application",
-    description="A simple FastAPI application with health check endpoint",
-    version="1.0.0",
-    openapi_url="/openapi.json",
-    docs_url="/docs",
+    title=settings.APPLICATION_NAME,
+    description=settings.APPLICATION_DESCRIPTION,
+    version=settings.APPLICATION_VERSION,
+    openapi_url=settings.APPLICATION_OPENAPI_URL,
+    docs_url=settings.APPLICATION_DOCS_URL,
     lifespan=lifespan,
 )
 
@@ -45,5 +45,5 @@ app.include_router(health_router, prefix="/health", tags=["Health"])
 
 
 @app.get("/")
-async def hello(name: str = "World"):
-    return f"Hello, {name}!"
+async def hello():
+    return f"Hello, from {settings.APPLICATION_NAME}!"

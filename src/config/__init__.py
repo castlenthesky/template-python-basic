@@ -22,6 +22,13 @@ class Settings(BaseSettings):
   API_PORT: int = 8000
   API_URL: str = "http://localhost:8000"
 
+  # FastAPI Settings
+  APPLICATION_NAME: str = "My FastAPI Application"
+  APPLICATION_VERSION: str = "1.0.0"
+  APPLICATION_DESCRIPTION: str = "A simple FastAPI application with health check endpoint"
+  APPLICATION_OPENAPI_URL: str = "/openapi.json"
+  APPLICATION_DOCS_URL: str = "/docs"
+
   # ===================================================
   # ################ Database Settings ################
   # ===================================================

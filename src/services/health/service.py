@@ -52,12 +52,24 @@ class HealthService:
             return HealthResponse(
                 status=status,
                 message=message,
-                details={
+                application={
+                    "application": settings.APPLICATION_NAME,
+                    "version": settings.APPLICATION_VERSION,
+                    "description": settings.APPLICATION_DESCRIPTION
+                },
+                api_support_documentation={
+                    "openapi_url": settings.API_URL + settings.APPLICATION_OPENAPI_URL,
+                    "docs_url": settings.API_URL + settings.APPLICATION_DOCS_URL
+                },
+                environment={
                     "environment": settings.ENVIRONMENT,
-                    "is_production": settings.is_production,
-                    "database_healthy": db_healthy,
-                    "database_error": db_error if not db_healthy else None,
-                    "version": "1.0.0",
+                    "is_production": settings.is_production
+                },
+                services={
+                    "database": {
+                        "database_healthy": db_healthy,
+                        "database_error": db_error if not db_healthy else None,
+                    }
                 }
             )
             
